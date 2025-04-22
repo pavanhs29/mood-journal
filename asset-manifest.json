@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/mood-journal/static/css/main.2bdccd3d.css",
+    "main.js": "/mood-journal/static/js/main.6f141f97.js",
+    "static/js/453.97127cc3.chunk.js": "/mood-journal/static/js/453.97127cc3.chunk.js",
+    "index.html": "/mood-journal/index.html",
+    "main.2bdccd3d.css.map": "/mood-journal/static/css/main.2bdccd3d.css.map",
+    "main.6f141f97.js.map": "/mood-journal/static/js/main.6f141f97.js.map",
+    "453.97127cc3.chunk.js.map": "/mood-journal/static/js/453.97127cc3.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2bdccd3d.css",
+    "static/js/main.6f141f97.js"
+  ]
+}
