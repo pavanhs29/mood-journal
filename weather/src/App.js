@@ -82,7 +82,7 @@ function App() {
     localStorage.setItem('darkMode', darkMode);
   }, [darkMode]);
 
-  // used openweathermap for API
+  // used openweathermap API for weather data
   const fetchWeather = async () => {
     try {
       const API_KEY = '2d9e1728cf1e4f8e6a7bba0f163d22dd';
