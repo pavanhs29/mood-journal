@@ -1,19 +1,29 @@
 import React, { useState } from 'react';
 import { formatDate } from '../utils/dateUtils';
 import { moodObj } from '../utils/moodUtils';
+import {
+  InputAdornment,
+  TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  CircularProgress,
+  Chip,
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import DeleteIcon from '@mui/icons-material/Delete';
+import WarningIcon from '@mui/icons-material/Warning';
 
 function JournalView({ entries, loading, deleteEntry, formatTime }) {
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(null);
-
-  const moods = {
-    great: { emoji: '😀', label: 'Great', color: '#FFD700' },
-    good: { emoji: '🙂', label: 'Good', color: '#90EE90' },
-    neutral: { emoji: '😐', label: 'Neutral', color: '#ADD8E6' },
-    bad: { emoji: '😔', label: 'Bad', color: '#FFA07A' },
-    awful: { emoji: '😠', label: 'Awful', color: '#FF6347' },
-  };
 
   const filteredEntries = entries.filter((entry) => {
     const matchesMood = filter === 'all' || entry.mood === filter;
@@ -35,98 +45,169 @@ function JournalView({ entries, loading, deleteEntry, formatTime }) {
   };
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="200px">
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
-    <div className="journal-view">
-      <div className="journal-controls">
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search notes..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="mood-filter">
-          <select
+    <Box className="journal-view">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+          flexWrap: 'wrap',
+          gap: 2,
+        }}>
+        <TextField
+          placeholder="Search notes..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          variant="outlined"
+          size="small"
+          sx={{ flexGrow: 1 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <FormControl
+          sx={{ minWidth: 150 }}
+          size="small">
+          <InputLabel id="mood-filter-label">Mood Filter</InputLabel>
+          <Select
+            labelId="mood-filter-label"
+            id="mood-filter"
             value={filter}
+            label="Mood Filter"
             onChange={(e) => setFilter(e.target.value)}>
-            <option value="all">All Moods</option>
-            {Object.keys(moods).map((mood) => (
-              <option
+            <MenuItem value="all">All Moods</MenuItem>
+            {Object.keys(moodObj).map((mood) => (
+              <MenuItem
                 key={mood}
                 value={mood}>
-                {moods[mood].emoji} {moods[mood].label}
-              </option>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap={1}>
+                  {React.createElement(moodObj[mood].icon)}
+                  <span>{moodObj[mood].label}</span>
+                </Box>
+              </MenuItem>
             ))}
-          </select>
-        </div>
-      </div>
+          </Select>
+        </FormControl>
+      </Box>
 
       {filteredEntries.length === 0 ? (
-        <div className="no-entries">
-          <p>No entries found. Start tracking your mood today!</p>
-        </div>
+        <Box
+          sx={{
+            textAlign: 'center',
+            p: 3,
+            backgroundColor: '#f5f5f5',
+            borderRadius: 1,
+          }}>
+          <Typography variant="body1">
+            No entries found. Start tracking your mood today!
+          </Typography>
+        </Box>
       ) : (
-        <div className="entries-list">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {filteredEntries.map((entry) => (
-            <div
+            <Card
               key={entry.id}
-              className="entry-card"
-              style={{
-                borderLeft: `5px solid ${moods[entry.mood].color}`,
-                backgroundColor: `${moods[entry.mood].color}22`,
+              sx={{
+                borderLeft: `5px solid ${moodObj[entry.mood].color}`,
+                backgroundColor: `${moodObj[entry.mood].color}22`,
               }}>
-              <div className="entry-header">
-                <div className="entry-mood">
-                  <span className="mood-emoji">{moods[entry.mood].emoji}</span>
-                  <span className="mood-label">{moods[entry.mood].label}</span>
-                </div>
-                <div className="entry-date">
-                  {formatDate(entry.date)}
-                  {entry.dateTime && (
-                    <span className="entry-time">
-                      {' '}
-                      at {formatTime(entry.dateTime)}
-                    </span>
-                  )}
-                </div>
-              </div>
+              <CardContent>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    mb: 1,
+                  }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {React.createElement(moodObj[entry.mood].icon)}
+                    <Typography variant="subtitle1">
+                      {moodObj[entry.mood].label}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary">
+                    {formatDate(entry.date)}
+                    {entry.dateTime && (
+                      <span> at {formatTime(entry.dateTime)}</span>
+                    )}
+                  </Typography>
+                </Box>
 
-              {entry.note && (
-                <div className="entry-note">
-                  <p>{entry.note}</p>
-                </div>
-              )}
+                {entry.note && (
+                  <Typography
+                    variant="body1"
+                    sx={{ mt: 2, mb: 2 }}>
+                    {entry.note}
+                  </Typography>
+                )}
 
-              {entry.weather && (
-                <div className="entry-weather">
-                  <img
-                    src={`https://openweathermap.org/img/wn/${entry.weather.icon}.png`}
-                    alt={entry.weather.condition}
-                  />
-                  <span>
-                    {entry.weather.temp}°C • {entry.weather.condition}
-                  </span>
-                </div>
-              )}
+                {entry.weather && (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      mt: 1,
+                    }}>
+                    <img
+                      src={`https://openweathermap.org/img/wn/${entry.weather.icon}.png`}
+                      alt={entry.weather.condition}
+                      style={{ width: '24px', height: '24px' }}
+                    />
+                    <Chip
+                      label={`${entry.weather.temp}°C • ${entry.weather.condition}`}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </Box>
+                )}
 
-              <div className="entry-actions">
-                <button
-                  className={`delete-button ${
-                    confirmDelete === entry.id ? 'confirm' : ''
-                  }`}
-                  onClick={() => handleDelete(entry.id)}>
-                  {confirmDelete === entry.id ? 'Confirm Delete?' : 'Delete'}
-                </button>
-              </div>
-            </div>
+                <Box
+                  sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                  <Button
+                    variant={
+                      confirmDelete === entry.id ? 'contained' : 'outlined'
+                    }
+                    color={confirmDelete === entry.id ? 'error' : 'primary'}
+                    size="small"
+                    startIcon={
+                      confirmDelete === entry.id ? (
+                        <WarningIcon />
+                      ) : (
+                        <DeleteIcon />
+                      )
+                    }
+                    onClick={() => handleDelete(entry.id)}>
+                    {confirmDelete === entry.id ? 'Confirm Delete?' : 'Delete'}
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
           ))}
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }
 
